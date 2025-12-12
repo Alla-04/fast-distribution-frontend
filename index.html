@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Ensures the page scales correctly on phones/tablets -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Page title shown in the browser tab -->
+    <title>FAST – Distribution Tools</title>
+
+    <!-- Main stylesheet for all styling -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- EmailJS library, used to send emails directly from the browser -->
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+    <!-- SheetJS library, used to read CSV and Excel files for bulk emails/SMS -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+</head>
+
+<body>
+<!-- Main card container that holds all distribution tools -->
+<section class="card">
+
+    <!-- Title at the top of the page -->
+    <h2>Distribution Tools</h2> 
+
+    <p class="description">Welcome to FAST’s Distribution Page, where you can easily share your surveys using QR codes, email, or SMS.</p>
+
+    <!-- The three main tabs the user can switch between: QR Code Generator, Email Sender, SMS Sender -->
+    <div class="tabs-row">
+        <!-- Clicking a tab triggers showTab() to display the selected panel -->
+        <button class="tab-btn active" id="tab-qr" onclick="showTab('qr')">⛶ QR Code</button>
+        <button class="tab-btn" id="tab-email" onclick="showTab('email')">✉ Email</button>
+        <button class="tab-btn" id="tab-sms" onclick="showTab('sms')">💬 SMS</button>
+    </div>
+
+    <!-- Orange underline under the active tab -->
+    <div class="tab-underline"></div>
+
+    <!-- QR TAB -->
+     <div id="panel-qr" class="panel">
+        <!-- Small description under the title -->
+        <p class="subtitle">Generate a QR code for any survey link.</p> 
+        
+        <!-- Form is required so the browser can show the built-in "required" popup -->
+        <form onsubmit="event.preventDefault(); generateQRCode();">
+            <!-- User enters the URL here -->
+            <input type="text" id="qrCodeURL" class="input" placeholder="https://your-survey-link.com" required>
+            <!-- Button to generate the QR code by triggering the generateQRCode() function -->
+            <button class="btn dark" type="submit">Generate QR Code</button>
+        </form>
+
+     <!-- Container that holds the generated QR code image and messages -->
+        <div id="qrCodeImageBox" class="qr-box">
+        <img src="" id="qrCodeImage"> <!-- The generated QR code gets inserted here -->
+        <p id="qrSuccessMessage"></p> <!-- Success message appears here after QR generation -->
+        <p id="qrCodeError"></p>      <!-- Any error messages appear here -->
+        </div>
+
+        <!-- Download button (hidden until a QR code exists) -->
+        <button class="btn orange" id="downloadButton" style="display:none;" onclick="downloadQRCode()">Download Image</button>
+     </div>
+    
+
+    <!-- EMAIL TAB -->
+    <div id="panel-email" class="panel hidden">
+
+        <p class="subtitle">Send your survey directly to recipient emails.</p>
+
+         <!-- Sub-tabs allow switching between Basic and Advanced email forms -->
+        <div class="sub-tabs-row">
+            <button class="sub-tab-btn sub-active" id="subtab-email-basic" onclick="showEmailForm('basic')">Basic</button>
+            <button class="sub-tab-btn" id="subtab-email-advanced" onclick="showEmailForm('advanced')">Advanced</button>
+        </div>
+
+        <!-- BASIC EMAIL FORM -->
+        <form id="basicEmailForm" onsubmit="event.preventDefault(); sendEmailBasic();">
+
+            <!-- Row containing recipients input and file upload -->
+            <div class="form-row">
+                <div class="half">
+                    <label>Recipients</label>
+                    <!-- User enters one or more email addresses -->
+                    <input type="text" class="input" id="emailRecipientsBasic" placeholder="user@mail.com, user2@mail.com" required>
+                </div>
+
+                <div class="half">
+                    <label>Upload CSV/Excel</label>
+                    <!-- CSV/Excel upload auto-fills recipient emails -->
+                    <label class="file-upload">
+                        Choose File
+                        <input type="file" id="emailFileBasic" accept=".csv,.xlsx,.xls" onchange="extractEmails(this.files[0], 'emailRecipientsBasic')">
+                    </label>
+                </div>
+            </div>
+
+             <!-- Subject line for the email -->
+            <label>Email Subject</label>
+            <input type="text" class="input" id="emailSubjectBasic" placeholder="Enter subject" required>
+
+             <!-- Survey link included in the email -->
+            <label>Survey Link</label>
+            <input type="text" class="input" id="emailSurveyBasic" placeholder="https://your-survey-link.com" required>
+
+            <button class="btn dark" type="submit">Send Email</button>  <!-- Sends the email(s) -->
+            <p id="messageBoxBasic"></p> <!-- Displays success/failure status -->
+        </form>
+
+
+        <!-- ADVANCED EMAIL FORM -->
+        <form id="advancedEmailForm" class="hidden" onsubmit="event.preventDefault(); sendEmailAdvanced();">
+
+            <div class="form-row">
+                <div class="half">
+                    <label>Recipients</label>
+                     <!-- Advanced recipients input -->
+                    <input type="text" class="input" id="emailRecipientsAdv" placeholder="user@mail.com, user2@mail.com" required>
+                </div>
+
+                <div class="half">
+                    <label>Upload CSV/Excel</label>
+                    <!-- Upload file to auto-fill recipients -->
+                    <label class="file-upload">
+                        Choose File
+                        <input type="file" id="emailFileAdv" accept=".csv,.xlsx,.xls" onchange="extractEmails(this.files[0], 'emailRecipientsAdv')">
+                    </label>
+                </div>
+            </div>
+
+            <!-- Email subject -->
+            <label>Email Subject</label>
+            <input type="text" class="input" id="emailSubjectAdv" placeholder="Enter subject" required>
+
+            <!-- Custom email body -->
+            <label>Email Body</label>
+            <textarea id="emailBodyAdv" class="textarea" placeholder="Write your message..." required></textarea>
+
+            <button class="btn dark" type="submit">Send Email</button>  <!-- Sends advanced email -->
+            <p id="messageBoxAdvanced"></p> <!-- Displays advanced email status -->
+        </form>
+
+        
+    </div>
+
+
+    <!-- SMS TAB -->
+    <div id="panel-sms" class="panel hidden">
+
+        <p class="subtitle">Send your survey via SMS.</p>
+
+        <form id="smsForm" onsubmit="event.preventDefault(); sendSMS();">
+
+            <div class="sms-row">
+                <div class="half">
+                    <label>Phone Numbers</label>
+                    <!-- Input to add one or more phone numbers separated by commas -->
+                    <input type="text" class="input" id="smsPhones" placeholder="+97339000000, +97339000001" required>
+                </div>
+
+                <div class="half">
+                    <label>Upload CSV/Excel</label>
+                    <!-- Upload file to auto-fill phone numbers -->
+                    <label class="file-upload">
+                        Choose File
+                        <input type="file" id="smsFile" accept=".csv,.xlsx,.xls" onchange="extractPhones(this.files[0], 'smsPhones')">
+                    </label>
+                </div>
+            </div>
+
+            <!-- SMS message content -->
+            <label>SMS Message</label>
+            <textarea id="smsMessage" class="textarea" placeholder="Type your SMS message..." required></textarea>
+
+            <!-- Sends SMS messages -->
+            <button class="btn orange" type="submit">Send SMS</button>
+        </form>
+
+        <!-- Displays SMS success/failure status -->
+        <p id="smsMessageBox"></p>
+    </div>
+
+</section>
+
+<!-- External JavaScript file containing all logic -->
+<script src="script.js"></script>
+</body>
+</html>

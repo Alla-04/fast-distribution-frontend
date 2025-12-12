@@ -1,0 +1,239 @@
+/* GENERAL PAGE LAYOUT
+   Centers the card and sets background */
+body {
+    margin: 0;
+    padding: 0;
+    background: #F5F6F7; /* Light gray background */
+    font-family: 'Segoe UI', sans-serif;
+    display: flex; /* Center card horizontally */
+    justify-content: center;
+}
+
+/* MAIN WHITE CARD CONTAINER
+   This is the main box holding all tabs */
+.card {
+    margin-top: 60px;
+    background: white;
+    width: 55%; /* Main content width */
+    padding: 40px;
+    border-radius: 16px; /* Rounded corners */
+    box-shadow: 0 4px 18px rgba(0,0,0,0.08); /* Soft shadow */
+}
+
+/* MAIN TITLE */
+.card h2 {
+    text-align: center;
+    color: #0A2540;
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+/* SUBTITLE TEXT UNDER EACH TAB */
+.subtitle {
+    color: #555;  /* Gray text */
+    font-size: 14px;
+    margin-bottom: 15px;
+}
+
+/* TAB BUTTONS (QR / EMAIL / SMS) */
+.tabs-row {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+}
+
+.tab-btn {
+    background: transparent;
+    border: none;
+    font-size: 15px;
+    font-weight: 600;
+    color: #777; /* Unselected tab color */
+    cursor: pointer;
+}
+
+.tab-btn.active {
+    color: #0A2540; /* Active tab color */
+}
+
+/* Orange underline under tab row */
+.tab-underline {
+    height: 2px;
+    width: 100%;
+    background: #FF7A00;
+    margin-top: 10px;
+}
+
+/*  TEXT INPUTS AND TEXTAREAS */
+.input, .textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1.5px solid #ccc;
+    border-radius: 8px;
+    font-size: 14px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+}
+
+.textarea {
+    min-height: 90px; /* Taller for message typing */
+    resize: vertical;
+}
+
+/* BUTTON STYLES */
+.btn {
+    width: 100%;
+    border: none;
+    padding: 12px;
+    color: #fff;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.dark {
+    background: #0A2540; /* Navy button */
+}
+
+.dark:hover {
+    background: #081c31;
+}
+
+.orange {
+    background: #FF7A00;  /* Orange button */
+}
+
+.orange:hover {
+    background: #e56b00;
+}
+
+/* Hide elements (used for switching tabs/forms) */
+.hidden {
+    display: none;
+}
+
+/* QR CODE CONTAINER & IMAGE */
+.qr-box {
+    display: none;  /* Hidden until QR is created */
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.qr-box img {
+    width: 160px;
+    height: 160px;
+}
+
+/* Green success message under QR */
+#qrSuccessMessage {
+    color: green;
+    font-weight: 600;
+}
+
+/* FIELD LABELS ABOVE INPUTS */
+label {
+    display: block;
+    color: #0A2540;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 8px;
+}
+
+/* SIDE-BY-SIDE ROW LAYOUTS
+   Used for email & SMS: recipients + uploads */
+.form-row,
+.sms-row {
+    display: flex;
+    gap: 20px;
+}
+
+.form-row .half,
+.sms-row .half {
+    width: 50%;   /* Each half occupies 50% of row */
+}
+
+/* CUSTOM FILE UPLOAD BUTTON */
+.file-upload {
+    width: 93%;
+    background: #0A2540;
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    text-align: center;
+    font-weight: 600;
+    cursor: pointer;
+    display: block;
+    margin-bottom: 15px;
+    border: none;
+}
+
+.file-upload:hover {
+    background: #081c31;      /* Darker on hover */
+}
+
+/* Hide default file input */
+.file-upload input[type="file"] {
+    display: none;
+}
+
+/* SMS FORM SPACING FIX */
+#smsForm {
+    margin-bottom: 0;
+    padding-bottom: 0;
+}
+
+#smsForm .btn.orange {
+    width: 100%;
+    display: block;
+    border-radius: 8px;
+    padding: 16px;
+}
+
+#panel-sms {
+    padding-bottom: 0;
+}
+
+/* EMAIL SUB-TAB BUTTONS (Basic / Advanced) */
+.sub-tab-btn {
+    background: #0A2540;     
+    color: white;          
+    border: none;             
+    padding: 10px 22px;     
+    font-weight: 600;
+    border-radius: 8px;     
+    cursor: pointer;
+    margin-right: 8px;    
+    margin-bottom: 12px;
+}
+
+.sub-tab-btn:hover {
+    background: #081c31;      /* Darker on hover */
+}
+
+.sub-tab-btn.sub-active {
+    background: #FF7A00;      /* Orange when active */
+    color: white;
+}
+
+/* QR SPACING TWEAKS */
+#qrCodeImage {
+    margin-top: 18px; 
+}
+
+#qrSuccessMessage {
+    margin-bottom: 30px;  
+}
+
+#qrCodeError {
+    margin-top: 1px;      
+    margin-bottom: 1px;   
+    padding: 0;          
+}
+
+.description {
+    text-align: center;
+    font-size: 14px;
+    max-width: 700px;
+    margin: 0 auto 20px;
+    color: #0A2540;
+}
