@@ -179,7 +179,7 @@ function sendEmailBasic() {
     const survey = document.getElementById("emailSurveyBasic").value.trim();
     const box = document.getElementById("messageBoxBasic");
 
-    // CAPTCHA Validation
+    // reCAPTCHA Validation
     const token = grecaptcha.getResponse();
     if (!token) {
         box.innerHTML = "<p style='color:red;'>Please verify that you are not a robot.</p>";
@@ -203,7 +203,7 @@ function sendEmailBasic() {
             subject: subject,
             email: email,
             survey: survey,
-            "g-recaptcha-response": token
+            "g-recaptcha-response": token // Send the reCAPTCHA verification token so EmailJS can confirm the request is from a real user
         })
         // If the email is sent successfully, update success counter
         .then(() => {
@@ -229,7 +229,7 @@ function sendEmailBasic() {
             } else {
                 box.innerHTML = `<p style='color:orange;'> ${success}/${total} sent, ${fail} failed</p>`;
             }
-            grecaptcha.reset(); // Reset CAPTCHA
+            grecaptcha.reset(); // Reset reCAPTCHA for the next email submission
         }
     }
 
@@ -254,6 +254,13 @@ function sendEmailAdvanced() {
     const body = document.getElementById("emailBodyAdv").value.trim();
     const box = document.getElementById("messageBoxAdvanced");
 
+    // reCAPTCHA Validation
+    const token = grecaptcha.getResponse();
+    if (!token) {
+        box.innerHTML = "<p style='color:red;'>Please verify that you are not a robot.</p>";
+        return;
+    }
+
     box.innerHTML = "<p style='color:#0A2540;'>Sending emails...</p>";
 
     let success = 0;
@@ -266,7 +273,8 @@ function sendEmailAdvanced() {
         emailjs.send("service_uqg41sp", "template_56gxkbu", {
             subject2: subject2,
             body: body,
-            email2: email2
+            email2: email2,
+            "g-recaptcha-response": token
         })
         .then(() => {
             success++;
@@ -286,6 +294,7 @@ function sendEmailAdvanced() {
             } else {
                 box.innerHTML = `<p style='color:orange;'> ${success}/${total} sent, ${fail} failed</p>`;
             }
+            grecaptcha.reset();
         }
     }
 
@@ -417,4 +426,5 @@ function extractPhones(file, id) {
     reader.readAsArrayBuffer(file);
 
 }
+
 
