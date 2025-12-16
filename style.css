@@ -237,3 +237,7 @@ label {
     margin: 0 auto 20px;
     color: #0A2540;
 }
+
+#panel-email .g-recaptcha {
+    margin-top: 18px;
+}
