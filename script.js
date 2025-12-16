@@ -179,6 +179,13 @@ function sendEmailBasic() {
     const survey = document.getElementById("emailSurveyBasic").value.trim();
     const box = document.getElementById("messageBoxBasic");
 
+    // CAPTCHA Validation
+    const token = grecaptcha.getResponse();
+    if (!token) {
+        box.innerHTML = "<p style='color:red;'>Please verify that you are not a robot.</p>";
+        return;
+    }
+
     // Show message while sending emails
     box.innerHTML = "<p style='color:#0A2540;'>Sending emails...</p>";
 
@@ -195,7 +202,8 @@ function sendEmailBasic() {
         emailjs.send("service_uqg41sp", "template_tq7ho68", {
             subject: subject,
             email: email,
-            survey: survey
+            survey: survey,
+            "g-recaptcha-response": token
         })
         // If the email is sent successfully, update success counter
         .then(() => {
@@ -221,6 +229,7 @@ function sendEmailBasic() {
             } else {
                 box.innerHTML = `<p style='color:orange;'> ${success}/${total} sent, ${fail} failed</p>`;
             }
+            grecaptcha.reset(); // Reset CAPTCHA
         }
     }
 
@@ -408,3 +417,4 @@ function extractPhones(file, id) {
     reader.readAsArrayBuffer(file);
 
 }
+
