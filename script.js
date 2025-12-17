@@ -59,6 +59,24 @@ function clearInputsExcept(activeTab) {
 }
 
 
+// Store the IDs of each reCAPTCHA widget so Email and SMS can be verified separately
+let emailCaptchaId;
+let smsCaptchaId;
+
+// This function runs when the reCAPTCHA script finishes loading
+// It renders two independent reCAPTCHA widgets:
+// one for the Email form and one for the SMS form
+function onRecaptchaLoad() {
+    emailCaptchaId = grecaptcha.render("email-recaptcha", {
+        sitekey: "6Lekxy0sAAAAANXPMJX6fZkcCVkZJ4ng4ZyZk3v_"
+    });
+
+    smsCaptchaId = grecaptcha.render("sms-recaptcha", {
+        sitekey: "6Lekxy0sAAAAANXPMJX6fZkcCVkZJ4ng4ZyZk3v_"
+    });
+}
+
+
 // QR CODE GENERATION //
 // These variables connect JavaScript to the QR code elements on the page 
 let qrCodeImageBox = document.getElementById("qrCodeImageBox");
@@ -180,7 +198,7 @@ function sendEmailBasic() {
     const box = document.getElementById("messageBoxBasic");
 
     // reCAPTCHA Validation
-    const token = grecaptcha.getResponse();
+    const token = grecaptcha.getResponse(emailCaptchaId);
     if (!token) {
         box.innerHTML = "<p style='color:red;'>Please verify that you are not a robot.</p>";
         return;
@@ -229,7 +247,7 @@ function sendEmailBasic() {
             } else {
                 box.innerHTML = `<p style='color:orange;'> ${success}/${total} sent, ${fail} failed</p>`;
             }
-            grecaptcha.reset(); // Reset reCAPTCHA for the next email submission
+            grecaptcha.reset(emailCaptchaId); // Reset reCAPTCHA for the next email submission
         }
     }
 
@@ -255,7 +273,7 @@ function sendEmailAdvanced() {
     const box = document.getElementById("messageBoxAdvanced");
 
     // reCAPTCHA Validation
-    const token = grecaptcha.getResponse();
+    const token = grecaptcha.getResponse(emailCaptchaId);
     if (!token) {
         box.innerHTML = "<p style='color:red;'>Please verify that you are not a robot.</p>";
         return;
@@ -294,7 +312,7 @@ function sendEmailAdvanced() {
             } else {
                 box.innerHTML = `<p style='color:orange;'> ${success}/${total} sent, ${fail} failed</p>`;
             }
-            grecaptcha.reset();
+            grecaptcha.reset(emailCaptchaId);
         }
     }
 
@@ -347,6 +365,13 @@ function sendSMS() {
     const message = document.getElementById("smsMessage").value.trim(); // Get the message the user typed
     const box = document.getElementById("smsMessageBox"); // Box where we show status messages to the user
 
+    // reCAPTCHA Validation
+    const captchaToken = grecaptcha.getResponse(smsCaptchaId);
+    if (!captchaToken) {
+        box.innerHTML = "<p style='color:red;'>Please verify that you are not a robot.</p>";
+        return;
+    }
+
     // Let the user know that sending has started
     box.innerHTML = "<p style='color:#0A2540;'>Sending...</p>";
 
@@ -360,7 +385,7 @@ function sendSMS() {
         fetch("https://fast-sms-backend.onrender.com/twilio-send", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ phoneList: [num], message })
+            body: JSON.stringify({ phoneList: [num], message, captchaToken: captchaToken })
         })
         .then(res => res.json()) // Convert backend response into usable JavaScript object
         .then(data => { // Check the result sent back from the backend
@@ -395,6 +420,11 @@ function sendSMS() {
             } else {
                 box.innerHTML = `<p style='color:orange;'>${success}/${total} sent, ${fail} failed</p>`;
             }
+            grecaptcha.reset(smsCaptchaId); // Reset reCAPTCHA for the next SMS submission
+            
+            // Clear the input fields after sending
+            document.getElementById("smsPhones").value = "";
+            document.getElementById("smsMessage").value = "";
         }
     }
 }
@@ -424,7 +454,4 @@ function extractPhones(file, id) {
     };
 
     reader.readAsArrayBuffer(file);
-
 }
-
-
